@@ -1,0 +1,301 @@
+import SwiftUI
+
+struct CountryCode: Identifiable {
+    let id = UUID()
+    let flag: String
+    let name: String
+    let code: String
+}
+
+struct CountryCodesReferenceView: View {
+    @State private var searchText: String = ""
+    
+    let countryCodes: [CountryCode] = [
+        CountryCode(flag: "🇦🇫", name: "Afghanistan", code: "+93"),
+        CountryCode(flag: "🇦🇱", name: "Albania", code: "+355"),
+        CountryCode(flag: "🇩🇿", name: "Algeria", code: "+213"),
+        CountryCode(flag: "🇦🇸", name: "American Samoa", code: "+1-684"),
+        CountryCode(flag: "🇦🇩", name: "Andorra", code: "+376"),
+        CountryCode(flag: "🇦🇴", name: "Angola", code: "+244"),
+        CountryCode(flag: "🇦🇮", name: "Anguilla", code: "+1-264"),
+        CountryCode(flag: "🇦🇶", name: "Antarctica", code: "+672"),
+        CountryCode(flag: "🇦🇬", name: "Antigua and Barbuda", code: "+1-268"),
+        CountryCode(flag: "🇦🇷", name: "Argentina", code: "+54"),
+        CountryCode(flag: "🇦🇲", name: "Armenia", code: "+374"),
+        CountryCode(flag: "🇦🇼", name: "Aruba", code: "+297"),
+        CountryCode(flag: "🇦🇺", name: "Australia", code: "+61"),
+        CountryCode(flag: "🇦🇹", name: "Austria", code: "+43"),
+        CountryCode(flag: "🇦🇿", name: "Azerbaijan", code: "+994"),
+        CountryCode(flag: "🇧🇸", name: "Bahamas", code: "+1-242"),
+        CountryCode(flag: "🇧🇭", name: "Bahrain", code: "+973"),
+        CountryCode(flag: "🇧🇩", name: "Bangladesh", code: "+880"),
+        CountryCode(flag: "🇧🇧", name: "Barbados", code: "+1-246"),
+        CountryCode(flag: "🇧🇾", name: "Belarus", code: "+375"),
+        CountryCode(flag: "🇧🇪", name: "Belgium", code: "+32"),
+        CountryCode(flag: "🇧🇿", name: "Belize", code: "+501"),
+        CountryCode(flag: "🇧🇯", name: "Benin", code: "+229"),
+        CountryCode(flag: "🇧🇲", name: "Bermuda", code: "+1-441"),
+        CountryCode(flag: "🇧🇹", name: "Bhutan", code: "+975"),
+        CountryCode(flag: "🇧🇴", name: "Bolivia", code: "+591"),
+        CountryCode(flag: "🇧🇦", name: "Bosnia and Herzegovina", code: "+387"),
+        CountryCode(flag: "🇧🇼", name: "Botswana", code: "+267"),
+        CountryCode(flag: "🇧🇷", name: "Brazil", code: "+55"),
+        CountryCode(flag: "🇮🇴", name: "British Indian Ocean Territory", code: "+246"),
+        CountryCode(flag: "🇧🇳", name: "Brunei", code: "+673"),
+        CountryCode(flag: "🇧🇬", name: "Bulgaria", code: "+359"),
+        CountryCode(flag: "🇧🇫", name: "Burkina Faso", code: "+226"),
+        CountryCode(flag: "🇧🇮", name: "Burundi", code: "+257"),
+        CountryCode(flag: "🇰🇭", name: "Cambodia", code: "+855"),
+        CountryCode(flag: "🇨🇲", name: "Cameroon", code: "+237"),
+        CountryCode(flag: "🇨🇦", name: "Canada", code: "+1"),
+        CountryCode(flag: "🇨🇻", name: "Cape Verde", code: "+238"),
+        CountryCode(flag: "🇰🇾", name: "Cayman Islands", code: "+1-345"),
+        CountryCode(flag: "🇨🇫", name: "Central African Republic", code: "+236"),
+        CountryCode(flag: "🇹🇩", name: "Chad", code: "+235"),
+        CountryCode(flag: "🇨🇱", name: "Chile", code: "+56"),
+        CountryCode(flag: "🇨🇳", name: "China", code: "+86"),
+        CountryCode(flag: "🇨🇽", name: "Christmas Island", code: "+61"),
+        CountryCode(flag: "🇨🇨", name: "Cocos Islands", code: "+61"),
+        CountryCode(flag: "🇨🇴", name: "Colombia", code: "+57"),
+        CountryCode(flag: "🇰🇲", name: "Comoros", code: "+269"),
+        CountryCode(flag: "🇨🇬", name: "Congo", code: "+242"),
+        CountryCode(flag: "🇨🇩", name: "Congo (DRC)", code: "+243"),
+        CountryCode(flag: "🇨🇰", name: "Cook Islands", code: "+682"),
+        CountryCode(flag: "🇨🇷", name: "Costa Rica", code: "+506"),
+        CountryCode(flag: "🇨🇮", name: "Côte d'Ivoire", code: "+225"),
+        CountryCode(flag: "🇭🇷", name: "Croatia", code: "+385"),
+        CountryCode(flag: "🇨🇺", name: "Cuba", code: "+53"),
+        CountryCode(flag: "🇨🇼", name: "Curaçao", code: "+599"),
+        CountryCode(flag: "🇨🇾", name: "Cyprus", code: "+357"),
+        CountryCode(flag: "🇨🇿", name: "Czech Republic", code: "+420"),
+        CountryCode(flag: "🇩🇰", name: "Denmark", code: "+45"),
+        CountryCode(flag: "🇩🇯", name: "Djibouti", code: "+253"),
+        CountryCode(flag: "🇩🇲", name: "Dominica", code: "+1-767"),
+        CountryCode(flag: "🇩🇴", name: "Dominican Republic", code: "+1-809"),
+        CountryCode(flag: "🇪🇨", name: "Ecuador", code: "+593"),
+        CountryCode(flag: "🇪🇬", name: "Egypt", code: "+20"),
+        CountryCode(flag: "🇸🇻", name: "El Salvador", code: "+503"),
+        CountryCode(flag: "🇬🇶", name: "Equatorial Guinea", code: "+240"),
+        CountryCode(flag: "🇪🇷", name: "Eritrea", code: "+291"),
+        CountryCode(flag: "🇪🇪", name: "Estonia", code: "+372"),
+        CountryCode(flag: "🇪🇹", name: "Ethiopia", code: "+251"),
+        CountryCode(flag: "🇫🇰", name: "Falkland Islands", code: "+500"),
+        CountryCode(flag: "🇫🇴", name: "Faroe Islands", code: "+298"),
+        CountryCode(flag: "🇫🇯", name: "Fiji", code: "+679"),
+        CountryCode(flag: "🇫🇮", name: "Finland", code: "+358"),
+        CountryCode(flag: "🇫🇷", name: "France", code: "+33"),
+        CountryCode(flag: "🇬🇫", name: "French Guiana", code: "+594"),
+        CountryCode(flag: "🇵🇫", name: "French Polynesia", code: "+689"),
+        CountryCode(flag: "🇬🇦", name: "Gabon", code: "+241"),
+        CountryCode(flag: "🇬🇲", name: "Gambia", code: "+220"),
+        CountryCode(flag: "🇬🇪", name: "Georgia", code: "+995"),
+        CountryCode(flag: "🇩🇪", name: "Germany", code: "+49"),
+        CountryCode(flag: "🇬🇭", name: "Ghana", code: "+233"),
+        CountryCode(flag: "🇬🇮", name: "Gibraltar", code: "+350"),
+        CountryCode(flag: "🇬🇷", name: "Greece", code: "+30"),
+        CountryCode(flag: "🇬🇱", name: "Greenland", code: "+299"),
+        CountryCode(flag: "🇬🇩", name: "Grenada", code: "+1-473"),
+        CountryCode(flag: "🇬🇵", name: "Guadeloupe", code: "+590"),
+        CountryCode(flag: "🇬🇺", name: "Guam", code: "+1-671"),
+        CountryCode(flag: "🇬🇹", name: "Guatemala", code: "+502"),
+        CountryCode(flag: "🇬🇬", name: "Guernsey", code: "+44-1481"),
+        CountryCode(flag: "🇬🇳", name: "Guinea", code: "+224"),
+        CountryCode(flag: "🇬🇼", name: "Guinea-Bissau", code: "+245"),
+        CountryCode(flag: "🇬🇾", name: "Guyana", code: "+592"),
+        CountryCode(flag: "🇭🇹", name: "Haiti", code: "+509"),
+        CountryCode(flag: "🇭🇳", name: "Honduras", code: "+504"),
+        CountryCode(flag: "🇭🇰", name: "Hong Kong", code: "+852"),
+        CountryCode(flag: "🇭🇺", name: "Hungary", code: "+36"),
+        CountryCode(flag: "🇮🇸", name: "Iceland", code: "+354"),
+        CountryCode(flag: "🇮🇳", name: "India", code: "+91"),
+        CountryCode(flag: "🇮🇩", name: "Indonesia", code: "+62"),
+        CountryCode(flag: "🇮🇷", name: "Iran", code: "+98"),
+        CountryCode(flag: "🇮🇶", name: "Iraq", code: "+964"),
+        CountryCode(flag: "🇮🇪", name: "Ireland", code: "+353"),
+        CountryCode(flag: "🇮🇲", name: "Isle of Man", code: "+44-1624"),
+        CountryCode(flag: "🇮🇱", name: "Israel", code: "+972"),
+        CountryCode(flag: "🇮🇹", name: "Italy", code: "+39"),
+        CountryCode(flag: "🇯🇲", name: "Jamaica", code: "+1-876"),
+        CountryCode(flag: "🇯🇵", name: "Japan", code: "+81"),
+        CountryCode(flag: "🇯🇪", name: "Jersey", code: "+44-1534"),
+        CountryCode(flag: "🇯🇴", name: "Jordan", code: "+962"),
+        CountryCode(flag: "🇰🇿", name: "Kazakhstan", code: "+7"),
+        CountryCode(flag: "🇰🇪", name: "Kenya", code: "+254"),
+        CountryCode(flag: "🇰🇮", name: "Kiribati", code: "+686"),
+        CountryCode(flag: "🇰🇵", name: "North Korea", code: "+850"),
+        CountryCode(flag: "🇰🇷", name: "South Korea", code: "+82"),
+        CountryCode(flag: "🇰🇼", name: "Kuwait", code: "+965"),
+        CountryCode(flag: "🇰🇬", name: "Kyrgyzstan", code: "+996"),
+        CountryCode(flag: "🇱🇦", name: "Laos", code: "+856"),
+        CountryCode(flag: "🇱🇻", name: "Latvia", code: "+371"),
+        CountryCode(flag: "🇱🇧", name: "Lebanon", code: "+961"),
+        CountryCode(flag: "🇱🇸", name: "Lesotho", code: "+266"),
+        CountryCode(flag: "🇱🇷", name: "Liberia", code: "+231"),
+        CountryCode(flag: "🇱🇾", name: "Libya", code: "+218"),
+        CountryCode(flag: "🇱🇮", name: "Liechtenstein", code: "+423"),
+        CountryCode(flag: "🇱🇹", name: "Lithuania", code: "+370"),
+        CountryCode(flag: "🇱🇺", name: "Luxembourg", code: "+352"),
+        CountryCode(flag: "🇲🇴", name: "Macau", code: "+853"),
+        CountryCode(flag: "🇲🇰", name: "North Macedonia", code: "+389"),
+        CountryCode(flag: "🇲🇬", name: "Madagascar", code: "+261"),
+        CountryCode(flag: "🇲🇼", name: "Malawi", code: "+265"),
+        CountryCode(flag: "🇲🇾", name: "Malaysia", code: "+60"),
+        CountryCode(flag: "🇲🇻", name: "Maldives", code: "+960"),
+        CountryCode(flag: "🇲🇱", name: "Mali", code: "+223"),
+        CountryCode(flag: "🇲🇹", name: "Malta", code: "+356"),
+        CountryCode(flag: "🇲🇭", name: "Marshall Islands", code: "+692"),
+        CountryCode(flag: "🇲🇶", name: "Martinique", code: "+596"),
+        CountryCode(flag: "🇲🇷", name: "Mauritania", code: "+222"),
+        CountryCode(flag: "🇲🇺", name: "Mauritius", code: "+230"),
+        CountryCode(flag: "🇾🇹", name: "Mayotte", code: "+262"),
+        CountryCode(flag: "🇲🇽", name: "Mexico", code: "+52"),
+        CountryCode(flag: "🇫🇲", name: "Micronesia", code: "+691"),
+        CountryCode(flag: "🇲🇩", name: "Moldova", code: "+373"),
+        CountryCode(flag: "🇲🇨", name: "Monaco", code: "+377"),
+        CountryCode(flag: "🇲🇳", name: "Mongolia", code: "+976"),
+        CountryCode(flag: "🇲🇪", name: "Montenegro", code: "+382"),
+        CountryCode(flag: "🇲🇸", name: "Montserrat", code: "+1-664"),
+        CountryCode(flag: "🇲🇦", name: "Morocco", code: "+212"),
+        CountryCode(flag: "🇲🇿", name: "Mozambique", code: "+258"),
+        CountryCode(flag: "🇲🇲", name: "Myanmar", code: "+95"),
+        CountryCode(flag: "🇳🇦", name: "Namibia", code: "+264"),
+        CountryCode(flag: "🇳🇷", name: "Nauru", code: "+674"),
+        CountryCode(flag: "🇳🇵", name: "Nepal", code: "+977"),
+        CountryCode(flag: "🇳🇱", name: "Netherlands", code: "+31"),
+        CountryCode(flag: "🇳🇨", name: "New Caledonia", code: "+687"),
+        CountryCode(flag: "🇳🇿", name: "New Zealand", code: "+64"),
+        CountryCode(flag: "🇳🇮", name: "Nicaragua", code: "+505"),
+        CountryCode(flag: "🇳🇪", name: "Niger", code: "+227"),
+        CountryCode(flag: "🇳🇬", name: "Nigeria", code: "+234"),
+        CountryCode(flag: "🇳🇺", name: "Niue", code: "+683"),
+        CountryCode(flag: "🇳🇫", name: "Norfolk Island", code: "+672"),
+        CountryCode(flag: "🇲🇵", name: "Northern Mariana Islands", code: "+1-670"),
+        CountryCode(flag: "🇳🇴", name: "Norway", code: "+47"),
+        CountryCode(flag: "🇴🇲", name: "Oman", code: "+968"),
+        CountryCode(flag: "🇵🇰", name: "Pakistan", code: "+92"),
+        CountryCode(flag: "🇵🇼", name: "Palau", code: "+680"),
+        CountryCode(flag: "🇵🇸", name: "Palestine", code: "+970"),
+        CountryCode(flag: "🇵🇦", name: "Panama", code: "+507"),
+        CountryCode(flag: "🇵🇬", name: "Papua New Guinea", code: "+675"),
+        CountryCode(flag: "🇵🇾", name: "Paraguay", code: "+595"),
+        CountryCode(flag: "🇵🇪", name: "Peru", code: "+51"),
+        CountryCode(flag: "🇵🇭", name: "Philippines", code: "+63"),
+        CountryCode(flag: "🇵🇳", name: "Pitcairn Islands", code: "+64"),
+        CountryCode(flag: "🇵🇱", name: "Poland", code: "+48"),
+        CountryCode(flag: "🇵🇹", name: "Portugal", code: "+351"),
+        CountryCode(flag: "🇵🇷", name: "Puerto Rico", code: "+1-787"),
+        CountryCode(flag: "🇶🇦", name: "Qatar", code: "+974"),
+        CountryCode(flag: "🇷🇪", name: "Réunion", code: "+262"),
+        CountryCode(flag: "🇷🇴", name: "Romania", code: "+40"),
+        CountryCode(flag: "🇷🇺", name: "Russia", code: "+7"),
+        CountryCode(flag: "🇷🇼", name: "Rwanda", code: "+250"),
+        CountryCode(flag: "🇧🇱", name: "Saint Barthélemy", code: "+590"),
+        CountryCode(flag: "🇸🇭", name: "Saint Helena", code: "+290"),
+        CountryCode(flag: "🇰🇳", name: "Saint Kitts and Nevis", code: "+1-869"),
+        CountryCode(flag: "🇱🇨", name: "Saint Lucia", code: "+1-758"),
+        CountryCode(flag: "🇲🇫", name: "Saint Martin", code: "+590"),
+        CountryCode(flag: "🇵🇲", name: "Saint Pierre and Miquelon", code: "+508"),
+        CountryCode(flag: "🇻🇨", name: "Saint Vincent and the Grenadines", code: "+1-784"),
+        CountryCode(flag: "🇼🇸", name: "Samoa", code: "+685"),
+        CountryCode(flag: "🇸🇲", name: "San Marino", code: "+378"),
+        CountryCode(flag: "🇸🇹", name: "São Tomé and Príncipe", code: "+239"),
+        CountryCode(flag: "🇸🇦", name: "Saudi Arabia", code: "+966"),
+        CountryCode(flag: "🇸🇳", name: "Senegal", code: "+221"),
+        CountryCode(flag: "🇷🇸", name: "Serbia", code: "+381"),
+        CountryCode(flag: "🇸🇨", name: "Seychelles", code: "+248"),
+        CountryCode(flag: "🇸🇱", name: "Sierra Leone", code: "+232"),
+        CountryCode(flag: "🇸🇬", name: "Singapore", code: "+65"),
+        CountryCode(flag: "🇸🇽", name: "Sint Maarten", code: "+1-721"),
+        CountryCode(flag: "🇸🇰", name: "Slovakia", code: "+421"),
+        CountryCode(flag: "🇸🇮", name: "Slovenia", code: "+386"),
+        CountryCode(flag: "🇸🇧", name: "Solomon Islands", code: "+677"),
+        CountryCode(flag: "🇸🇴", name: "Somalia", code: "+252"),
+        CountryCode(flag: "🇿🇦", name: "South Africa", code: "+27"),
+        CountryCode(flag: "🇬🇸", name: "South Georgia and South Sandwich Islands", code: "+500"),
+        CountryCode(flag: "🇸🇸", name: "South Sudan", code: "+211"),
+        CountryCode(flag: "🇪🇸", name: "Spain", code: "+34"),
+        CountryCode(flag: "🇱🇰", name: "Sri Lanka", code: "+94"),
+        CountryCode(flag: "🇸🇩", name: "Sudan", code: "+249"),
+        CountryCode(flag: "🇸🇷", name: "Suriname", code: "+597"),
+        CountryCode(flag: "🇸🇯", name: "Svalbard and Jan Mayen", code: "+47"),
+        CountryCode(flag: "🇸🇿", name: "Eswatini", code: "+268"),
+        CountryCode(flag: "🇸🇪", name: "Sweden", code: "+46"),
+        CountryCode(flag: "🇨🇭", name: "Switzerland", code: "+41"),
+        CountryCode(flag: "🇸🇾", name: "Syria", code: "+963"),
+        CountryCode(flag: "🇹🇼", name: "Taiwan", code: "+886"),
+        CountryCode(flag: "🇹🇯", name: "Tajikistan", code: "+992"),
+        CountryCode(flag: "🇹🇿", name: "Tanzania", code: "+255"),
+        CountryCode(flag: "🇹🇭", name: "Thailand", code: "+66"),
+        CountryCode(flag: "🇹🇱", name: "Timor-Leste", code: "+670"),
+        CountryCode(flag: "🇹🇬", name: "Togo", code: "+228"),
+        CountryCode(flag: "🇹🇰", name: "Tokelau", code: "+690"),
+        CountryCode(flag: "🇹🇴", name: "Tonga", code: "+676"),
+        CountryCode(flag: "🇹🇹", name: "Trinidad and Tobago", code: "+1-868"),
+        CountryCode(flag: "🇹🇳", name: "Tunisia", code: "+216"),
+        CountryCode(flag: "🇹🇷", name: "Turkey", code: "+90"),
+        CountryCode(flag: "🇹🇲", name: "Turkmenistan", code: "+993"),
+        CountryCode(flag: "🇹🇨", name: "Turks and Caicos Islands", code: "+1-649"),
+        CountryCode(flag: "🇹🇻", name: "Tuvalu", code: "+688"),
+        CountryCode(flag: "🇺🇬", name: "Uganda", code: "+256"),
+        CountryCode(flag: "🇺🇦", name: "Ukraine", code: "+380"),
+        CountryCode(flag: "🇦🇪", name: "United Arab Emirates", code: "+971"),
+        CountryCode(flag: "🇬🇧", name: "United Kingdom", code: "+44"),
+        CountryCode(flag: "🇺🇸", name: "United States", code: "+1"),
+        CountryCode(flag: "🇺🇾", name: "Uruguay", code: "+598"),
+        CountryCode(flag: "🇺🇿", name: "Uzbekistan", code: "+998"),
+        CountryCode(flag: "🇻🇺", name: "Vanuatu", code: "+678"),
+        CountryCode(flag: "🇻🇦", name: "Vatican City", code: "+379"),
+        CountryCode(flag: "🇻🇪", name: "Venezuela", code: "+58"),
+        CountryCode(flag: "🇻🇳", name: "Vietnam", code: "+84"),
+        CountryCode(flag: "🇻🇬", name: "British Virgin Islands", code: "+1-284"),
+        CountryCode(flag: "🇻🇮", name: "U.S. Virgin Islands", code: "+1-340"),
+        CountryCode(flag: "🇼🇫", name: "Wallis and Futuna", code: "+681"),
+        CountryCode(flag: "🇪🇭", name: "Western Sahara", code: "+212"),
+        CountryCode(flag: "🇾🇪", name: "Yemen", code: "+967"),
+        CountryCode(flag: "🇿🇲", name: "Zambia", code: "+260"),
+        CountryCode(flag: "🇿🇼", name: "Zimbabwe", code: "+263")
+    ]
+    
+    var filteredCountries: [CountryCode] {
+        if searchText.isEmpty {
+            return countryCodes
+        } else {
+            return countryCodes.filter { country in
+                country.name.localizedCaseInsensitiveContains(searchText) ||
+                country.code.contains(searchText)
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            List(filteredCountries) { country in
+                HStack {
+                    Text(country.flag)
+                        .font(.title2)
+                    
+                    Text(country.name)
+                        .font(.body)
+                    
+                    Spacer()
+                    
+                    Text(country.code)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
+                }
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    UIPasteboard.general.string = country.code
+                }
+            }
+            .navigationTitle("Country Codes")
+            .searchable(text: $searchText, prompt: "Search country or code")
+        }
+    }
+}
+
+#Preview {
+    CountryCodesReferenceView()
+}
