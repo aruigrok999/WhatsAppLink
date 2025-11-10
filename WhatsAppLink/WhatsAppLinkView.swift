@@ -5,7 +5,8 @@ struct WhatsAppLinkView: View {
     @State private var showError: Bool = false
     
     var body: some View {
-        VStack(spacing: 20) {
+        NavigationStack {
+            VStack(spacing: 20) {
             Text("WhatsApp Chat")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -19,16 +20,31 @@ struct WhatsAppLinkView: View {
                 Text("Phone Number")
                     .font(.headline)
                 
-                TextField("e.g., +1234567890", text: $phoneNumber)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.phonePad)
-                    .autocorrectionDisabled()
-                
-                Text("Include country code (e.g., +44 for UK)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("+")
+                    TextField("1-123-456-7890", text: $phoneNumber)
+                        .textFieldStyle(.roundedBorder)
+                        .keyboardType(.phonePad)
+                        .autocorrectionDisabled()
+                }
+                                
+                HStack {
+                    Text("+")   // Just to pad out the link to be under the Text Field
+                        .hidden()
+                    NavigationLink {
+                        CountryCodesReferenceView(phoneNumber: $phoneNumber)
+                    } label: {
+                        HStack {
+                            Text("Include country code")
+                                .font(.caption)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.blue)
+                    }
+                    Spacer()
+                }
             }
-            .padding(.horizontal)
             
             // WhatsApp button
             Button(action: openWhatsAppChat) {
@@ -46,6 +62,24 @@ struct WhatsAppLinkView: View {
             .disabled(cleanedPhoneNumber.isEmpty)
             .opacity(cleanedPhoneNumber.isEmpty ? 0.5 : 1.0)
             
+            // Preview of the number
+            if !cleanedPhoneNumber.isEmpty {
+                VStack(spacing: 4) {
+                    Text("Chat will open with:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .padding(.horizontal)
+            }
+            
             if showError {
                 Text("Unable to open WhatsApp. Make sure it's installed.")
                     .font(.caption)
@@ -56,6 +90,7 @@ struct WhatsAppLinkView: View {
             Spacer()
         }
         .padding()
+        }
     }
     
     // Remove all non-numeric characters except +

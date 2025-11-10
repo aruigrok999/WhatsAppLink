@@ -8,6 +8,8 @@ struct CountryCode: Identifiable {
 }
 
 struct CountryCodesReferenceView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var phoneNumber: String
     @State private var searchText: String = ""
     
     let countryCodes: [CountryCode] = [
@@ -287,7 +289,15 @@ struct CountryCodesReferenceView: View {
                 .padding(.vertical, 4)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    UIPasteboard.general.string = country.code
+                    // Could copy to pasteboard
+//                    UIPasteboard.general.string = country.code
+                    
+                    // Add country code to phone number (strip the +)
+                    let codeWithoutPlus = country.code.replacingOccurrences(of: "+", with: "")
+                    phoneNumber = codeWithoutPlus + phoneNumber
+                    
+                    // Dismiss the view
+                    dismiss()
                 }
             }
             .navigationTitle("Country Codes")
@@ -297,5 +307,5 @@ struct CountryCodesReferenceView: View {
 }
 
 #Preview {
-    CountryCodesReferenceView()
+    CountryCodesReferenceView(phoneNumber: .constant(""))
 }
