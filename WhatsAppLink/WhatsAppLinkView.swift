@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct WhatsAppLinkView: View {
     @State private var phoneNumber: String = ""
@@ -39,46 +40,46 @@ struct WhatsAppLinkView: View {
                     }
                     
                     // Preview of the number
-                    if !cleanedPhoneNumber.isEmpty && cleanedPhoneNumber.count > 4 {
-                        Group {
-                            if horizontalSizeClass == .regular {
-                                // Landscape - horizontal layout
-                                HStack {
-                                    HStack(spacing: 8) {
-                                        Text("Chat will open with:")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                        Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
-                                            .font(.body)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.primary)
-                                    }
-                                    .padding()
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(8)
-                                    .padding(.horizontal)
-                                    Spacer()
-                                }
-                                
-                            } else {
-                                // Portrait - vertical layout
-                                VStack(spacing: 4) {
-                                    Text("Chat will open with:")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
-                                        .font(.body)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(.primary)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
-                                .padding(.horizontal)
-                            }
-                        }
-                    }
+//                    if !cleanedPhoneNumber.isEmpty && cleanedPhoneNumber.count > 4 {
+//                        Group {
+//                            if horizontalSizeClass == .regular {
+//                                // Landscape - horizontal layout
+//                                HStack {
+//                                    HStack(spacing: 8) {
+//                                        Text("Chat will open with:")
+//                                            .font(.caption)
+//                                            .foregroundColor(.secondary)
+//                                        Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
+//                                            .font(.body)
+//                                            .fontWeight(.medium)
+//                                            .foregroundColor(.primary)
+//                                    }
+//                                    .padding()
+//                                    .background(Color(.systemGray6))
+//                                    .cornerRadius(8)
+//                                    .padding(.horizontal)
+//                                    Spacer()
+//                                }
+//                                
+//                            } else {
+//                                // Portrait - vertical layout
+//                                VStack(spacing: 4) {
+//                                    Text("Chat will open with:")
+//                                        .font(.caption)
+//                                        .foregroundColor(.secondary)
+//                                    Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
+//                                        .font(.body)
+//                                        .fontWeight(.medium)
+//                                        .foregroundColor(.primary)
+//                                }
+//                                .padding()
+//                                .frame(maxWidth: .infinity)
+//                                .background(Color(.systemGray6))
+//                                .cornerRadius(8)
+//                                .padding(.horizontal)
+//                            }
+//                        }
+//                    }
                     
                     if showError {
                         Text("Unable to open WhatsApp. Make sure it's installed.")
@@ -135,7 +136,19 @@ struct WhatsAppLinkView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 40, height: 40)
-                Text("Open WhatsApp Chat")
+                VStack {
+                    Text("Open WhatsApp Chat")
+                    HStack {
+                        if cleanedPhoneNumber.isEmpty || cleanedPhoneNumber.count < 5 {
+                            Text("+").hidden()
+                        } else {
+                            Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
+                                .font(.body)
+                                .fontWeight(.medium)
+                            
+                        }
+                    }
+                }
             }
             .padding()
             .background(Color.green)
@@ -148,9 +161,18 @@ struct WhatsAppLinkView: View {
     
     // MARK: - Helper Properties and Methods
     
-    // Remove all non-numeric characters except +
+    // If a number is typed, return its digits. Otherwise, try to read digits from the pasteboard and, if there are > 5, use that.
     private var cleanedPhoneNumber: String {
-        phoneNumber.filter { $0.isNumber }
+        var input = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+        if input.isEmpty {
+            if let paste = UIPasteboard.general.string {
+                let digits = paste.filter { $0.isNumber }
+                if digits.count > 5 {
+                    input = digits
+                }
+            }
+        }
+        return input.filter { $0.isNumber }
     }
     
     private func openWhatsAppChat() {
