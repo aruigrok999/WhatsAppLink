@@ -3,8 +3,10 @@ import UIKit
 
 struct WhatsAppLinkView: View {
     @State private var phoneNumber: String = ""
+    @State private var cachedPasteboardNumber: String = ""
     @State private var showError: Bool = false
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         NavigationStack {
@@ -92,6 +94,11 @@ struct WhatsAppLinkView: View {
                 }
                 .padding()
             }
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                if newPhase == .active {
+                    checkPasteboardForNumber()
+                }
+            }
         }
     }
     
@@ -104,10 +111,16 @@ struct WhatsAppLinkView: View {
             
             HStack {
                 Text("+")
-                TextField("1-123-456-7890", text: $phoneNumber)
+                TextField(currentPlaceholder, text: $phoneNumber)
                     .textFieldStyle(.roundedBorder)
                     .keyboardType(.phonePad)
                     .autocorrectionDisabled()
+                    .onChange(of: phoneNumber) { oldValue, newValue in
+                        // When user starts typing, clear the cached number
+                        if !newValue.isEmpty && !cachedPasteboardNumber.isEmpty {
+                            cachedPasteboardNumber = ""
+                        }
+                    }
             }
             
             HStack {
@@ -161,18 +174,43 @@ struct WhatsAppLinkView: View {
     
     // MARK: - Helper Properties and Methods
     
-    // If a number is typed, return its digits. Otherwise, try to read digits from the pasteboard and, if there are > 5, use that.
+    private var currentPlaceholder: String {
+        let currentPlaceholder: String
+        if cachedPasteboardNumber.isEmpty {
+            currentPlaceholder = "1-123-456-7890"
+        } else {
+            currentPlaceholder = cachedPasteboardNumber
+        }
+        
+        return currentPlaceholder
+    }
+    
+    // If user typed a number, use that. Otherwise, use the cached pasteboard number if available.
     private var cleanedPhoneNumber: String {
-        var input = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
-        if input.isEmpty {
-            if let paste = UIPasteboard.general.string {
-                let digits = paste.filter { $0.isNumber }
-                if digits.count > 5 {
-                    input = digits
-                }
+        if !phoneNumber.isEmpty {
+            let input = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+            return input.filter { $0.isNumber }
+        }
+        
+        // Use cached number if no user input
+        if !cachedPasteboardNumber.isEmpty {
+            return cachedPasteboardNumber
+        }
+        
+        return ""
+    }
+    
+    private func checkPasteboardForNumber() {
+        // Only check pasteboard if user hasn't typed anything
+        guard phoneNumber.isEmpty else { return }
+        
+        cachedPasteboardNumber = ""
+        if let paste = UIPasteboard.general.string {
+            let digits = paste.filter { $0.isNumber }
+            if digits.count > 4 {
+                cachedPasteboardNumber = digits
             }
         }
-        return input.filter { $0.isNumber }
     }
     
     private func openWhatsAppChat() {
