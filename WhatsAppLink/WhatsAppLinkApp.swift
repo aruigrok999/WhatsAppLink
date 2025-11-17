@@ -12,6 +12,12 @@ struct WhatsAppLinkApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+#if os(macOS)
+                .frame(width: 500, height: 150)
+#endif
         }
+#if os(macOS)
+        .windowResizability(.contentSize)
+#endif
     }
 }

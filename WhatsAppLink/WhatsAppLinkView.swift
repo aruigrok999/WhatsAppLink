@@ -1,5 +1,10 @@
 import SwiftUI
+
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 
 struct WhatsAppLinkView: View {
     @State private var phoneNumber: String = ""
@@ -71,9 +76,11 @@ struct WhatsAppLinkView: View {
                 Text("+")
                 TextField(currentPlaceholder, text: $phoneNumber)
                     .textFieldStyle(.roundedBorder)
-                    .keyboardType(.phonePad)
                     .autocorrectionDisabled()
                     .focused($isTextFieldFocused)
+#if os(iOS)
+                    .keyboardType(.phonePad)
+#endif
                 
                 Button(action: pasteFromClipboard) {
                     Image(systemName: "doc.on.clipboard")
@@ -128,6 +135,7 @@ struct WhatsAppLinkView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
         }
+        .buttonStyle(.plain)
         .disabled(cleanedPhoneNumber.isEmpty)
         .opacity(cleanedPhoneNumber.isEmpty ? 0.6 : 1.0)
     }
@@ -152,7 +160,13 @@ struct WhatsAppLinkView: View {
     }
         
     private func pasteFromClipboard() {
-        if let pasteString = UIPasteboard.general.string {
+#if os(iOS)
+        let pasteString = UIPasteboard.general.string
+#else
+        let pasteString = NSPasteboard.general.string(forType: .string)
+#endif
+        if let pasteString = pasteString
+        {
             // Extract only digits from the pasted content
             let digits = pasteString.filter { $0.isNumber }
             phoneNumber = digits
@@ -174,12 +188,17 @@ struct WhatsAppLinkView: View {
         let urlString = "https://api.whatsapp.com/send/?phone=\(digits)"
         
         if let url = URL(string: urlString) {
+#if os(iOS)
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
                 showError = false
             } else {
                 showError = true
             }
+#else
+            NSWorkspace.shared.open(url)
+            showError = false
+#endif
         } else {
             showError = true
         }
