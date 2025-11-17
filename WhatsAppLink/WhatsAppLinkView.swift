@@ -3,8 +3,8 @@ import UIKit
 
 struct WhatsAppLinkView: View {
     @State private var phoneNumber: String = ""
-    @State private var cachedPasteboardNumber: String = ""
     @State private var showError: Bool = false
+    @FocusState private var isTextFieldFocused: Bool
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.scenePhase) private var scenePhase
     
@@ -12,14 +12,6 @@ struct WhatsAppLinkView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    Text("WhatsApp Chat")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Enter a phone number to start a chat")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
                     // Phone number input and button
                     Group {
                         if horizontalSizeClass == .regular {
@@ -41,48 +33,6 @@ struct WhatsAppLinkView: View {
                         }
                     }
                     
-                    // Preview of the number
-//                    if !cleanedPhoneNumber.isEmpty && cleanedPhoneNumber.count > 4 {
-//                        Group {
-//                            if horizontalSizeClass == .regular {
-//                                // Landscape - horizontal layout
-//                                HStack {
-//                                    HStack(spacing: 8) {
-//                                        Text("Chat will open with:")
-//                                            .font(.caption)
-//                                            .foregroundColor(.secondary)
-//                                        Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
-//                                            .font(.body)
-//                                            .fontWeight(.medium)
-//                                            .foregroundColor(.primary)
-//                                    }
-//                                    .padding()
-//                                    .background(Color(.systemGray6))
-//                                    .cornerRadius(8)
-//                                    .padding(.horizontal)
-//                                    Spacer()
-//                                }
-//                                
-//                            } else {
-//                                // Portrait - vertical layout
-//                                VStack(spacing: 4) {
-//                                    Text("Chat will open with:")
-//                                        .font(.caption)
-//                                        .foregroundColor(.secondary)
-//                                    Text("+" + cleanedPhoneNumber.replacingOccurrences(of: "+", with: ""))
-//                                        .font(.body)
-//                                        .fontWeight(.medium)
-//                                        .foregroundColor(.primary)
-//                                }
-//                                .padding()
-//                                .frame(maxWidth: .infinity)
-//                                .background(Color(.systemGray6))
-//                                .cornerRadius(8)
-//                                .padding(.horizontal)
-//                            }
-//                        }
-//                    }
-                    
                     if showError {
                         Text("Unable to open WhatsApp. Make sure it's installed.")
                             .font(.caption)
@@ -96,8 +46,16 @@ struct WhatsAppLinkView: View {
             }
             .onChange(of: scenePhase) { oldPhase, newPhase in
                 if newPhase == .active {
-                    checkPasteboardForNumber()
+                    // Restore focus when app becomes active
+                    isTextFieldFocused = true
                 }
+            }
+            .onChange(of: horizontalSizeClass) { oldValue, newValue in
+                // Restore focus when orientation changes
+                isTextFieldFocused = true
+            }
+            .onAppear {
+                isTextFieldFocused = true
             }
         }
     }
@@ -106,7 +64,7 @@ struct WhatsAppLinkView: View {
     
     private var phoneNumberInputView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Phone Number")
+            Text("Enter a phone number to start a WhatsApp chat")
                 .font(.headline)
             
             HStack {
@@ -115,12 +73,14 @@ struct WhatsAppLinkView: View {
                     .textFieldStyle(.roundedBorder)
                     .keyboardType(.phonePad)
                     .autocorrectionDisabled()
-                    .onChange(of: phoneNumber) { oldValue, newValue in
-                        // When user starts typing, clear the cached number
-                        if !newValue.isEmpty && !cachedPasteboardNumber.isEmpty {
-                            cachedPasteboardNumber = ""
-                        }
-                    }
+                    .focused($isTextFieldFocused)
+                
+                Button(action: pasteFromClipboard) {
+                    Image(systemName: "doc.on.clipboard")
+                        .foregroundColor(.blue)
+                        .imageScale(.large)
+                }
+                .buttonStyle(.plain)
             }
             
             HStack {
@@ -150,7 +110,7 @@ struct WhatsAppLinkView: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
                 VStack {
-                    Text("Open WhatsApp Chat")
+                    Text("Open WhatsApp")
                     HStack {
                         if cleanedPhoneNumber.isEmpty || cleanedPhoneNumber.count < 5 {
                             Text("+").hidden()
@@ -175,41 +135,27 @@ struct WhatsAppLinkView: View {
     // MARK: - Helper Properties and Methods
     
     private var currentPlaceholder: String {
-        let currentPlaceholder: String
-        if cachedPasteboardNumber.isEmpty {
-            currentPlaceholder = "1-123-456-7890"
-        } else {
-            currentPlaceholder = cachedPasteboardNumber
-        }
+        let currentPlaceholder = "1-123-456-7890"
         
         return currentPlaceholder
     }
     
     // If user typed a number, use that. Otherwise, use the cached pasteboard number if available.
     private var cleanedPhoneNumber: String {
+        var cleanedPhoneNumber: String = ""
         if !phoneNumber.isEmpty {
             let input = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
-            return input.filter { $0.isNumber }
+            cleanedPhoneNumber = input.filter { $0.isNumber }
         }
         
-        // Use cached number if no user input
-        if !cachedPasteboardNumber.isEmpty {
-            return cachedPasteboardNumber
-        }
-        
-        return ""
+        return cleanedPhoneNumber
     }
-    
-    private func checkPasteboardForNumber() {
-        // Only check pasteboard if user hasn't typed anything
-        guard phoneNumber.isEmpty else { return }
         
-        cachedPasteboardNumber = ""
-        if let paste = UIPasteboard.general.string {
-            let digits = paste.filter { $0.isNumber }
-            if digits.count > 4 {
-                cachedPasteboardNumber = digits
-            }
+    private func pasteFromClipboard() {
+        if let pasteString = UIPasteboard.general.string {
+            // Extract only digits from the pasted content
+            let digits = pasteString.filter { $0.isNumber }
+            phoneNumber = digits
         }
     }
     
